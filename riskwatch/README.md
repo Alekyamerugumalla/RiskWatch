@@ -125,7 +125,6 @@ RiskWatch can assess the submitted account and message information, highlight co
 ## Hackathon Information
 
 - **Event:** HacXLerate 2026
-- **Challenge:** Challenge 03 — Digital Risk Protection
 - **Project:** RiskWatch
 - **Purpose:** Support the identification and investigation of potential digital threats.
 
