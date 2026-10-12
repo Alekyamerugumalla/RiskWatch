@@ -1,0 +1,36 @@
+[
+  {
+    "id": "state-bank-of-india",
+    "isDemo": false,
+    "name": "State Bank of India",
+    "aliases": [
+      "SBI"
+    ],
+    "tokens": [
+      "statebankofindia",
+      "sbi"
+    ],
+    "token": "statebankofindia",
+    "officialHandles": [
+      "theofficialsbi"
+    ],
+    "officialDisplayNames": [
+      "State Bank of India",
+      "SBI"
+    ],
+    "officialDomains": [
+      "sbi.co.in"
+    ],
+    "officialPhones": [],
+    "logoHash": "",
+    "officialApp": {
+      "package": "",
+      "name": "State Bank of India",
+      "developer": "",
+      "certSha256": "",
+      "iconHash": "",
+      "store": "Google Play",
+      "permissions": []
+    }
+  }
+]
