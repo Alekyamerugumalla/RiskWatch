@@ -1,65 +1,138 @@
-# RiskWatch: brand impersonation and scam monitor
+# RiskWatch — Brand Impersonation & Scam Monitor
 
-Built for HacXLerate Challenge 03 (Digital Risk Protection). RiskWatch checks social accounts and mobile apps against
-**any brand you configure**, scores each one with explainable evidence, links scams that share details, and drafts takedown reports.
-FreshKart (a fictional grocery-delivery company) is built in as a demo brand with a monitored dataset.
+**A Digital Risk Protection Platform | HacXLerate 2026 — Challenge 03**
 
-## Run it
+RiskWatch is a digital risk protection project designed to help identify potentially suspicious social media accounts, scam messages, malicious links, and risky mobile applications that may impersonate trusted brands.
+
+The platform analyzes submitted information, highlights suspicious indicators, and helps users understand potential digital threats.
+
+## Problem Statement
+
+Cybercriminals may impersonate trusted brands to deceive users through fake social media accounts, fraudulent messages, suspicious links, and unsafe mobile applications. These activities can lead to financial loss, stolen credentials, and compromised personal information.
+
+Manual identification of these threats can be time-consuming and difficult.
+
+## Our Solution
+
+RiskWatch provides a centralized platform for assessing potential digital threats. It evaluates submitted information using risk indicators, generates a risk score, and presents findings to support investigation and decision-making.
+
+## Key Features
+
+- **Brand Impersonation Detection:** Assess submitted social media account details for potential impersonation.
+- **Scam Message Analysis:** Identify suspicious language and potential scam indicators in submitted messages.
+- **Suspicious Link Assessment:** Examine submitted links for configured risk indicators.
+- **Mobile App Risk Assessment:** Support risk checks for submitted mobile application information.
+- **Risk Scoring:** Assign risk scores based on configured indicators.
+- **Explainable Results:** Show the indicators that contribute to a risk assessment.
+- **Investigation Support:** Help users review suspicious findings and prepare reports where supported by the implementation.
+
+## How It Works
+
+1. **Submit:** Enter information about a suspicious account, message, link, or mobile application.
+2. **Analyze:** The system evaluates the submitted information using its configured detection rules.
+3. **Assess Risk:** Risk indicators contribute to a risk score or severity classification.
+4. **Review:** Examine the results and the reasons behind the assessment.
+5. **Investigate:** Use the findings to support further review and reporting.
+
+## Technology Stack
+
+Update this section to match the technologies actually used in your codebase.
+
+- **Frontend:** [Add your frontend framework and libraries]
+- **Backend:** [Add your backend framework and runtime]
+- **Risk Analysis:** Configured rules and risk indicators
+- **Development Tools:** Visual Studio Code, Git, and GitHub
+
+## Project Structure
+
+```text
+RiskWatch/
+└── riskwatch/
+    ├── client/        # Frontend application
+    ├── server/        # Backend application
+    ├── README.md      # Project documentation
+    └── package.json   # Project configuration
+```
+
+## Getting Started
+
+### Prerequisites
+
+Install the tools required by your project, such as:
+
+- Git
+- Node.js and npm, if required by the project
+
+### Installation
+
+Clone the repository:
 
 ```bash
-npm run install:all     # once
-npm run build           # builds the dashboard
-npm start               # http://localhost:4000 (API + dashboard)
-npm run eval            # precision / recall on the labelled FreshKart test set
+git clone https://github.com/Alekyamerugumalla/RiskWatch.git
 ```
 
-For development run `npm start` in `server/` and `npm run dev` in `client/` (http://localhost:5173).
+Navigate to the project directory:
 
-## Using it for any brand
-
-1. **Brands** tab: enter the brand name, short names people use (for example SBI), official handles, official website, support
-   phone numbers and (optionally) a logo and official app details. The logo is turned into a 64-bit image fingerprint in the browser.
-   Brands are saved to `server/data/custom-brands.json`.
-2. **Check now** tab: pick the brand, copy the details from the profile or app listing you want to check, and select **Check risk**.
-   Each tab offers sample inputs generated for the selected brand.
-3. Optionally upload the profile picture or app icon. It is compared with the brand logo by image fingerprint.
-4. Every flagged check is remembered per brand. A later check that shares a link, phone number, UPI ID or file with an earlier one
-   is reported as linked to it (probably the same operator). "Forget earlier checks" clears this.
-
-Review queue, Campaigns and Accuracy always show the FreshKart demo data.
-
-## How scoring works
-
-- **Accounts:** handle look-alikes (homoglyphs such as `fr3shkart`, near-miss spellings), display-name cloning, logo similarity,
-  impersonation keywords, account behaviour, link risk and a scam-message classifier.
-- **Apps:** name/package look-alikes, icon match, distribution source, dangerous permissions and signer mismatch.
-- **Missing details are skipped, not guessed.** A blank field removes that check and the score is rescaled over the checks that ran.
-- **Score** is out of 100. A brand-resemblance gate caps accounts that do not resemble the brand, and mitigating factors
-  (for example "unofficial fan page") lower it. Levels: Low <35, Medium 35-54, High 55-74, Critical 75+.
-- **Short brand names** (4 letters or fewer) must match a whole word, so "Ola" does not flag "cola" or "hola".
-- **An app is trusted only with proof of origin** (matching signing certificate and developer). A matching package name alone is not
-  enough, because repackaged malware reuses it.
-- **Campaigns:** flagged assets that share a link, phone number, UPI ID or file hash are grouped.
-- **Action:** one-click takedown drafts. A human analyst confirms or dismisses every flag.
-
-## Honest limits
-
-- **No scraping.** RiskWatch does not fetch profiles from platforms (it breaks their terms and is brittle). The analyst pastes the
-  details, or a production version would feed the same record shape from platform APIs or partner data.
-- **Image comparison is a fingerprint, not a vision model.** It catches the same logo resized, recompressed or lightly edited. A heavily
-  redrawn, cropped or recoloured copy can slip past it.
-- **The scam classifier is rule-based** (transparent and fast) and tuned for common Indian scam wording (OTP, KYC, UPI, fee requests).
-  An LLM classifier is the natural upgrade, behind the same interface in `server/engine/scamText.js`.
-- **A scam that does not use the brand is capped at a low score.** This is a brand-impersonation tool, not a general scam detector.
-- **The accuracy numbers come from the FreshKart test set**, which was written alongside the detector. It is a sanity check, not a
-  real-world claim. Add real labelled cases before quoting it.
-- Review decisions and earlier checks are held in memory and reset when the server restarts. Brands are saved to disk.
-
-## Layout
-
+```bash
+cd RiskWatch/riskwatch
 ```
-server/engine/   similarity, scamText, indicators, analyze (signals + scoring), brands, campaigns, takedown, evaluation
-server/data/     demo brand and labelled FreshKart dataset (custom brands are saved here too)
-server/index.js  REST API
-client/src/      React dashboard (queue, campaigns, check now, brands, accuracy)
+
+Install dependencies according to the project's package configuration.
+
+If the root `package.json` defines an installation script, run:
+
+```bash
+npm install
 ```
+
+### Running the Application
+
+Check the available scripts in `package.json` before starting the application.
+
+For example, if the root package defines a development script:
+
+```bash
+npm run dev
+```
+
+If the frontend and backend have separate package files, install their dependencies and start each component using the scripts defined in the respective directories.
+
+**Note:** The exact commands depend on the scripts configured in your project.
+
+## Example Use Case
+
+Imagine a user encounters a social media account claiming to represent a trusted bank. The account sends an urgent message asking the user to verify account details through an unfamiliar link.
+
+RiskWatch can assess the submitted account and message information, highlight configured warning indicators, and provide a risk assessment to help the user decide whether further investigation is necessary.
+
+## Limitations
+
+- Detection accuracy depends on the configured rules and the quality of submitted information.
+- Risk scores should not be interpreted as guaranteed probabilities of fraud.
+- Manual or sample inputs do not provide automatic, continuous monitoring of external platforms.
+- False positives and false negatives may occur.
+- Real-world effectiveness requires further testing and validation.
+
+## Future Enhancements
+
+- Integrate authorized, real-time threat intelligence sources.
+- Improve detection using machine learning and natural language processing.
+- Add evidence collection and case history.
+- Improve reporting and investigation workflows.
+- Evaluate detection performance using representative, labeled datasets.
+- Add authentication, access controls, and secure data storage where required.
+
+## Hackathon Information
+
+- **Event:** HacXLerate 2026
+- **Challenge:** Challenge 03 — Digital Risk Protection
+- **Project:** RiskWatch
+- **Purpose:** Support the identification and investigation of potential digital threats.
+
+## Disclaimer
+
+RiskWatch is intended to support threat assessment and investigation. Its findings are not definitive proof of malicious activity. Users should verify results using reliable evidence before taking action.
+
+## Repository
+
+GitHub: https://github.com/Alekyamerugumalla/RiskWatch.
