@@ -31,6 +31,203 @@
       "iconHash": "",
       "store": "Google Play",
       "permissions": []
-    }
+    },
+    "assets": []
+  },
+  {
+    "id": "swiggy",
+    "isDemo": false,
+    "name": "Swiggy",
+    "aliases": [
+      "Instamart",
+      "Swiggy Instamart"
+    ],
+    "tokens": [
+      "swiggy",
+      "instamart",
+      "swiggyinstamart"
+    ],
+    "token": "swiggy",
+    "officialHandles": [
+      "swiggy_in",
+      "swiggy_care"
+    ],
+    "officialDisplayNames": [
+      "Swiggy",
+      "Instamart",
+      "Swiggy Instamart"
+    ],
+    "officialDomains": [
+      "swiggy.com"
+    ],
+    "officialPhones": [
+      "18001234567"
+    ],
+    "logoHash": "",
+    "officialApp": {
+      "package": "",
+      "name": "Swiggy",
+      "developer": "",
+      "certSha256": "",
+      "iconHash": "",
+      "store": "Google Play",
+      "permissions": []
+    },
+    "assets": []
+  },
+  {
+    "id": "swiggy-2",
+    "isDemo": false,
+    "name": "swiggy",
+    "aliases": [
+      "Instamart",
+      "Swiggy Instamart"
+    ],
+    "tokens": [
+      "swiggy",
+      "instamart",
+      "swiggyinstamart"
+    ],
+    "token": "swiggy",
+    "officialHandles": [
+      "swiggy_in",
+      "swiggy_care"
+    ],
+    "officialDisplayNames": [
+      "swiggy",
+      "Instamart",
+      "Swiggy Instamart"
+    ],
+    "officialDomains": [
+      "swiggy.com"
+    ],
+    "officialPhones": [
+      "18001234567"
+    ],
+    "logoHash": "",
+    "officialApp": {
+      "package": "",
+      "name": "swiggy",
+      "developer": "",
+      "certSha256": "",
+      "iconHash": "",
+      "store": "Google Play",
+      "permissions": []
+    },
+    "assets": []
+  },
+  {
+    "id": "amazon",
+    "isDemo": false,
+    "name": "Amazon",
+    "aliases": [
+      "Amazon India",
+      "Amazon Shopping"
+    ],
+    "tokens": [
+      "amazon",
+      "amazonindia",
+      "amazonshopping"
+    ],
+    "token": "amazon",
+    "officialHandles": [
+      "verify the current official handles before adding them as trusted."
+    ],
+    "officialDisplayNames": [
+      "Amazon",
+      "Amazon India",
+      "Amazon Shopping"
+    ],
+    "officialDomains": [
+      "amazon.in"
+    ],
+    "officialPhones": [],
+    "logoHash": "",
+    "officialApp": {
+      "package": "",
+      "name": "Amazon",
+      "developer": "",
+      "certSha256": "",
+      "iconHash": "",
+      "store": "Google Play",
+      "permissions": []
+    },
+    "assets": []
+  },
+  {
+    "id": "novastyle",
+    "isDemo": false,
+    "name": "NovaStyle",
+    "aliases": [
+      "Nova Style",
+      "NovaStyle Official"
+    ],
+    "tokens": [
+      "novastyle",
+      "novastyleofficial"
+    ],
+    "token": "novastyle",
+    "officialHandles": [
+      "novastyle_in",
+      "novastyle_care"
+    ],
+    "officialDisplayNames": [
+      "NovaStyle",
+      "Nova Style",
+      "NovaStyle Official"
+    ],
+    "officialDomains": [
+      "novastyle.example"
+    ],
+    "officialPhones": [],
+    "logoHash": "",
+    "officialApp": {
+      "package": "",
+      "name": "NovaStyle",
+      "developer": "",
+      "certSha256": "",
+      "iconHash": "",
+      "store": "Google Play",
+      "permissions": []
+    },
+    "assets": []
+  },
+  {
+    "id": "novastyle-2",
+    "isDemo": false,
+    "name": "NovaStyle",
+    "aliases": [
+      "Nova Style",
+      "NovaStyle Official"
+    ],
+    "tokens": [
+      "novastyle",
+      "novastyleofficial"
+    ],
+    "token": "novastyle",
+    "officialHandles": [
+      "novastyle_in",
+      "novastyle_care"
+    ],
+    "officialDisplayNames": [
+      "NovaStyle",
+      "Nova Style",
+      "NovaStyle Official"
+    ],
+    "officialDomains": [
+      "novastyle.example"
+    ],
+    "officialPhones": [],
+    "logoHash": "",
+    "officialApp": {
+      "package": "",
+      "name": "NovaStyle",
+      "developer": "",
+      "certSha256": "",
+      "iconHash": "",
+      "store": "Google Play",
+      "permissions": []
+    },
+    "assets": []
   }
 ]

@@ -149,6 +149,8 @@ function analyzeApp(e, brand) {
   const o = brand.officialApp;
   const tokens = brand.tokens;
   const signals = [];
+  // The form fills a blank developer with "Unknown"; treat that as not provided.
+  const dev = e.developer && e.developer !== 'Unknown' ? e.developer : '';
 
   const nameSim = brandSim(e.name, tokens);
   const pkgSim = brandSim(e.packageName, tokens);
@@ -168,12 +170,24 @@ function analyzeApp(e, brand) {
       : iconScore ? `App icon is a near-copy of the official icon (hash distance ${d}/64).`
       : `Icon differs from the official icon (distance ${d}/64).`, { na: !hasIcon }));
 
-  const sourceMap = { 'Google Play': 0, 'third-party-store': 0.7, 'direct-download': 1, telegram: 1, whatsapp: 1 };
-  let src = sourceMap[e.store] ?? 0.7;
-  let srcEv = `Distributed via ${e.store}.`;
-  if (e.store === 'Google Play' && o.developer && e.developer !== o.developer) {
-    src = 0.6; srcEv = `Listed on Google Play, but the developer is "${e.developer}", not "${o.developer}".`;
-  } else if (src >= 0.7) srcEv = `Sideloaded from ${e.store} (${e.downloadUrl || 'no store listing'}), not the official store listing.`;
+  
+const sourceMap = {
+  'Google Play': 0,
+  'third-party-store': 0.7,
+  'direct-download': 1,
+  telegram: 1,
+  whatsapp: 1,
+};
+
+let src = sourceMap[e.store] ?? 0.7;
+let srcEv = `Distribution source "${e.store}" needs verification.`;
+
+if (e.store === 'Google Play') {
+  srcEv = 'Listed on Google Play. Store presence alone does not establish impersonation.';
+} else if (src >= 0.7) {
+  srcEv = `Potentially untrusted distribution source: ${e.store} (${e.downloadUrl || 'no store listing'}).`;
+}
+
   signals.push(sig('source', 'Distribution source', 20, src, srcEv));
 
   const permHits = (e.permissions || []).filter((p) => DANGEROUS_PERMS[p] && !o.permissions.includes(p));
@@ -182,23 +196,47 @@ function analyzeApp(e, brand) {
     permHits.length ? `Requests permissions the real app does not need: ${permHits.join(', ')}.` : 'No unusual permissions compared to the official app.'));
 
   // Signer: compare the signing certificate when the brand gave one, otherwise the developer name.
+  // A blank developer / certificate means "unknown", never "mismatch": we can only judge what we were given.
   const certKnown = !!o.certSha256;
   const certOk = certKnown && !!e.certSha256 && e.certSha256 === o.certSha256;
-  const devOk = !!o.developer && e.developer === o.developer;
-  const canJudgeSigner = certKnown || !!o.developer;
+  const devOk = !!o.developer && dev === o.developer;
+  const canJudgeSigner = certKnown ? !!(e.certSha256 || dev) : !!(o.developer && dev);
   let signer = 0;
-  if (certKnown) signer = certOk && devOk ? 0 : !e.certSha256 ? 0.7 : 1;
-  else if (o.developer) signer = devOk ? 0 : 0.8;
+  if (canJudgeSigner) {
+    if (certKnown) signer = certOk && devOk ? 0 : !e.certSha256 ? 0.7 : 1;
+    else signer = devOk ? 0 : 0.8;
+  }
   signals.push(sig('signer', 'Signer / developer mismatch', 15, signer,
-    !canJudgeSigner ? 'No official developer or signing certificate is on file, so the signer was not checked.'
-      : signer ? `${certKnown && e.certSha256 ? 'Signing certificate' : certKnown ? 'No signing certificate' : 'Developer'} and developer ("${e.developer}") do not match the brand's.`
-      : 'Matches the brand\'s own signer.', { na: !canJudgeSigner }));
+    canJudgeSigner
+      ? (signer ? `${certKnown && e.certSha256 ? 'Signing certificate' : certKnown ? 'No signing certificate' : 'Developer'} and developer ("${dev || 'not given'}") do not match the brand's.`
+        : 'Matches the brand\'s own signer.')
+      : !dev && !e.certSha256 ? 'No developer or signing certificate was given for this app, so the signer could not be checked.'
+      : 'No official developer or signing certificate is on file for the brand, so the signer was not checked.', { na: !canJudgeSigner }));
 
   const brandResemblance = Math.max(nameSim, pkgSim, iconScore ? 1 - d / 32 : 0);
   // Trust needs proof of origin. A matching package name alone is NOT enough: repackaged malware reuses it.
   const trusted = certKnown ? certOk && devOk : pkgExact && devOk && e.store === 'Google Play';
   const text = classifyMany([e.description]);
-  const out = finish(e, brand, signals, { brandResemblance, scamScore: text.score, resemblanceNote: 'name, package and icon' }, [],
+
+  // A name match alone is only a lead. Impersonation needs a second, independent sign: a look-alike package,
+  // an icon copy, sideloading, dangerous permissions, a failed signer check or scam wording.
+  const corroboration = [];
+  if (pkgSim >= 0.85 && !pkgExact) corroboration.push('look-alike package name');
+  if (iconScore > 0) corroboration.push('icon copy');
+  if (src >= 0.6) corroboration.push('distribution source');
+  if (permHits.length) corroboration.push('dangerous permissions');
+  if (canJudgeSigner && signer > 0) corroboration.push('signer mismatch');
+  if (text.score > 0.25) corroboration.push('scam wording');
+  const missing = [];
+  if (!e.packageName) missing.push('package name');
+  if (!dev) missing.push('developer');
+  if (!e.iconHash) missing.push('app icon');
+  const verification = nameScore > 0 && !corroboration.length && !trusted
+    ? { missing, message: `The app name matches "${o.name}", but nothing else corroborates impersonation` +
+        (missing.length ? ` and the ${missing.join(', ')} ${missing.length === 1 ? 'was' : 'were'} not provided` : '') +
+        '. A matching name alone does not prove impersonation. Needs verification: check the store listing, package name and developer against the official app.' }
+    : null;
+  const out = finish(e, brand, signals, { brandResemblance, scamScore: text.score, resemblanceNote: 'name, package and icon', verification }, [],
     trusted ? { trusted: true, note: 'Matches the brand\'s own developer account and signing details' } : null);
   if (text.score > 0.25) {
     out.signals.push(sig('apptext', 'Store-description text', 0, text.score,
@@ -209,7 +247,7 @@ function analyzeApp(e, brand) {
 
 /* ------------------------------------------------------------ shared tail  */
 
-function finish(e, brand, signals, { brandResemblance, scamScore, resemblanceNote }, mitigations, trust) {
+function finish(e, brand, signals, { brandResemblance, scamScore, resemblanceNote, verification = null }, mitigations, trust) {
   // Rescale over the checks that ran, so missing inputs lower confidence instead of silently lowering risk.
   const applicable = signals.filter((s) => !s.na && s.weight > 0);
   const totalWeight = applicable.reduce((s, x) => s + x.weight, 0);
@@ -227,6 +265,10 @@ function finish(e, brand, signals, { brandResemblance, scamScore, resemblanceNot
       gate.reason = `Capped at ${Math.round(cap)}: no meaningful resemblance to the brand (${resemblanceNote}), so this is at most a generic scam risk, not brand impersonation.`;
     }
   }
+
+  // Insufficient evidence: keep the score below the Medium band and say so explicitly.
+  const NEEDS_VERIFICATION_CAP = 30;
+  if (verification && raw > NEEDS_VERIFICATION_CAP) raw = NEEDS_VERIFICATION_CAP;
 
   const mitPoints = mitigations.reduce((s, m) => s + m.points, 0);
   let score = clamp(raw + mitPoints, 0, 100);
@@ -265,7 +307,11 @@ function finish(e, brand, signals, { brandResemblance, scamScore, resemblanceNot
     gate,
     indicators: { ...indicators, hashes },
     indicatorKeys: indicatorKeys(indicators, hashes),
-    summary: summarize(signals, score, official),
+    status: official ? 'official' : verification ? 'needs_verification' : 'assessed',
+    verification: verification && !official ? verification.message : null,
+    summary: official ? summarize(signals, score, official)
+      : verification ? 'Needs verification: name matches the brand, but there is not enough evidence to call it impersonation.'
+      : summarize(signals, score, official),
     label: e.label,
     truthCampaign: e.truthCampaign || null,
     raw: e,
